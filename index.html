@@ -41,6 +41,7 @@ function render(){
 function play(u){mountPlayer(document.getElementById('pl'),document.getElementById('pb'),u)}
 function openM(id){
   const x=D.find(i=>i.id===id);if(!x)return;
+  if(window.track)track(x.title,x.type);
   document.getElementById('mt').textContent=x.title;
   document.getElementById('mm').textContent=[x.type==='series'?'مسلسل':'فيلم',x.year,x.genre].filter(Boolean).join(' · ');
   document.getElementById('md').textContent=x.desc||'';
@@ -61,6 +62,11 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.getElementById('ttl').textContent={all:'أحدث الإضافات',movie:'الأفلام',series:'المسلسلات'}[F];render()});
 window.setD=d=>{D=d;render()};
 </script>
-<script type="module">import {fetchItems} from './firebase.js';fetchItems().then(window.setD)</script>
+<script type="module">
+import {fetchItems,app} from './firebase.js';
+import {getAnalytics,logEvent,isSupported} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+fetchItems().then(window.setD);
+isSupported().then(ok=>{if(!ok)return;const a=getAnalytics(app);window.track=(t,ty)=>logEvent(a,'select_content',{content_type:ty,item_id:t})}).catch(()=>{});
+</script>
 </body>
 </html>

@@ -8,8 +8,10 @@ const app=initializeApp({
   projectId:"biflix-f5d51",
   storageBucket:"biflix-f5d51.firebasestorage.app",
   messagingSenderId:"611452269817",
-  appId:"1:611452269817:web:f1cb0442db6921af5a5e28"
+  appId:"1:611452269817:web:f1cb0442db6921af5a5e28",
+  measurementId:"G-ZJT2HE1R1V"
 });
+export {app};
 export const db=getFirestore(app), auth=getAuth(app);
 export {doc,setDoc,deleteDoc,signInWithEmailAndPassword,signOut,onAuthStateChanged};
 
