@@ -24,7 +24,7 @@
 
 <div id="modal"><div class="box">
   <button class="x" onclick="closeM()">✕ إغلاق</button>
-  <div class="player" id="pl"></div>
+  <div class="player" id="pl"></div><div class="meta" id="pb"></div>
   <h2 id="mt"></h2><div class="meta" id="mm"></div><p id="md"></p>
   <div class="eps" id="ep"></div>
 </div></div>
@@ -38,7 +38,7 @@ function render(){
   const L=D.filter(x=>(F==='all'||x.type===F)&&(!q||(x.title+' '+(x.genre||'')).toLowerCase().includes(q)));
   document.getElementById('grid').innerHTML=L.length?L.map(x=>`<div class="card" onclick="openM('${esc(x.id)}')"><div class="poster">${x.poster?`<img src="${esc(x.poster)}" alt="${esc(x.title)}" loading="lazy" onerror="this.remove()">`:esc(x.title[0]||'B')}</div><div class="i"><b>${esc(x.title)}</b><small>${x.type==='series'?'مسلسل':'فيلم'}${x.year?' · '+esc(x.year):''}</small></div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">لا توجد نتائج</div>';
 }
-function play(u){document.getElementById('pl').innerHTML=playerHTML(u)}
+function play(u){mountPlayer(document.getElementById('pl'),document.getElementById('pb'),u)}
 function openM(id){
   const x=D.find(i=>i.id===id);if(!x)return;
   document.getElementById('mt').textContent=x.title;
@@ -52,7 +52,7 @@ function openM(id){
   }else play(x.url);
   document.getElementById('modal').classList.add('open');
 }
-function closeM(){document.getElementById('modal').classList.remove('open');document.getElementById('pl').innerHTML=''}
+function closeM(){document.getElementById('modal').classList.remove('open');document.getElementById('pl').innerHTML='';document.getElementById('pb').innerHTML=''}
 document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeM()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
 document.getElementById('q').oninput=render;
