@@ -1,6 +1,6 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,getDocs,getDoc,doc,setDoc,addDoc,deleteDoc,query,orderBy,limit,getCountFromServer} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {getAuth,signInWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,getDocs,getDoc,doc,setDoc,addDoc,deleteDoc,query,orderBy,limit,increment} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const app=initializeApp({
   apiKey:"AIzaSyAT3fFdOtfJ-Xx5RxbHqM71XnxOARiUPUM",
@@ -25,22 +25,16 @@ export async function fetchItems(){
     try{return await (await fetch('data.json')).json()}catch(_){return[]}
   }
 }
-
-// تسجيل الدخول بجوجل (اختياري للزوار)
-export const loginGoogle=()=>signInWithPopup(auth,new GoogleAuthProvider());
-
-// الإعجابات: items/{id}/likes/{uid}
-export async function likeInfo(id,uid){
-  const n=(await getCountFromServer(collection(db,'items',id,'likes'))).data().count;
-  const me=uid?(await getDoc(doc(db,'items',id,'likes',uid))).exists():false;
-  return {n,me};
+// عدّاد الإعجاب وعدم الإعجاب: stats/{id}
+export async function getStats(id){
+  const s=await getDoc(doc(db,'stats',id));
+  return s.exists()?{likes:s.data().likes||0,dislikes:s.data().dislikes||0}:{likes:0,dislikes:0};
 }
-export const setLike=(id,uid,on)=>on?setDoc(doc(db,'items',id,'likes',uid),{ts:Date.now()}):deleteDoc(doc(db,'items',id,'likes',uid));
-
+export const vote=(id,l,d)=>setDoc(doc(db,'stats',id),{likes:increment(l),dislikes:increment(d)},{merge:true});
 // التعليقات: items/{id}/comments/{auto}
 export async function getComments(id){
   const s=await getDocs(query(collection(db,'items',id,'comments'),orderBy('ts','desc'),limit(50)));
   return s.docs.map(d=>({...d.data(),id:d.id}));
 }
-export const addComment=(id,u,text)=>addDoc(collection(db,'items',id,'comments'),{uid:u.uid,name:u.displayName||'مستخدم',photo:u.photoURL||'',text,ts:Date.now()});
+export const addComment=(id,u,text)=>addDoc(collection(db,'items',id,'comments'),{name:u.name,photo:u.pic||'',text,ts:Date.now()});
 export const delComment=(id,cid)=>deleteDoc(doc(db,'items',id,'comments',cid));

@@ -6,18 +6,22 @@
 <title>BFLIX | أفلام ومسلسلات</title>
 <meta name="description" content="BFLIX موقع لمشاهدة الأفلام والمسلسلات أونلاين بسهولة. تصفح أحدث الأفلام والمسلسلات وشاهدها مباشرة.">
 <link rel="canonical" href="https://omeriane18-ui.github.io/BIFLIX/">
-<meta name="theme-color" content="#0b0b10">
+<meta name="theme-color" content="#0a0a0f">
 <meta property="og:type" content="website">
 <meta property="og:title" content="BFLIX | أفلام ومسلسلات">
 <meta property="og:description" content="شاهد أحدث الأفلام والمسلسلات على BFLIX.">
 <meta property="og:url" content="https://omeriane18-ui.github.io/BIFLIX/">
 <meta property="og:locale" content="ar_AR">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="config.js"></script>
 </head>
 <body>
 <div id="intro"><span>BFLIX</span></div>
 <script>try{if(sessionStorage.getItem('bf_i'))document.getElementById('intro').remove()}catch(_){}</script>
-<header>
+<header id="hd">
   <a class="logo" href="./">BFLIX</a>
   <nav>
     <button class="on" data-f="all">الكل</button>
@@ -28,12 +32,12 @@
   <div class="au" id="au"></div>
 </header>
 <main>
-  <h2 id="ttl">أحدث الإضافات</h2>
-  <div id="grid" class="grid"></div>
+  <section id="hero"></section>
+  <div id="rows" class="rows"></div>
 </main>
 <footer>BFLIX © <span id="y"></span> — موقع مريان بلال · <a href="admin.html" style="opacity:.5">لوحة التحكم</a></footer>
 
-<div id="modal"><div class="box">
+<div id="modal"><div class="box" id="bx">
   <button class="x" id="cl">✕ إغلاق</button>
   <div id="dv" class="dv">
     <div class="poster" id="dp"></div>
@@ -47,45 +51,111 @@
     <div class="eps" id="ep"></div>
     <button id="bk" style="margin-top:10px">رجوع للمعلومات</button>
   </div>
-  <div class="bar"><button id="lk"></button></div>
-  <div class="cm"><h2>التعليقات</h2><div id="cf"></div><div id="cl2"></div></div>
+  <div class="bar">
+    <button id="lk" aria-label="إعجاب"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg><span id="lkn">0</span></button>
+    <button id="dl" class="dn" aria-label="عدم إعجاب"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg><span id="dln">0</span></button>
+    <button id="sh"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg> مشاركة</button>
+    <button id="cb"><svg viewBox="0 0 24 24"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg> <span id="cbn">0</span></button>
+  </div>
+  <div class="cm" id="cm"><h2>التعليقات</h2><div id="cf"></div><div id="cl2"></div></div>
 </div></div>
+
+<div id="lgm"><div>
+  <b style="font-size:20px">سجّل الدخول للتفاعل</b>
+  <span class="meta">لوضع إعجاب أو كتابة تعليق. المشاهدة متاحة للجميع بدون حساب.<br>يبقى حسابك محفوظًا في متصفحك فقط.</span>
+  <div id="lgb"></div>
+  <button id="lgx">إلغاء</button>
+</div></div>
+<div id="toast"></div>
 
 <script src="app.js"></script>
 <script type="module">
-import {fetchItems,app,auth,ADMIN,onAuthStateChanged,signOut,loginGoogle,likeInfo,setLike,getComments,addComment,delComment} from './firebase.js';
+import {fetchItems,app,auth,ADMIN,onAuthStateChanged,getStats,vote,getComments,addComment,delComment} from './firebase.js';
 import {getAnalytics,logEvent,isSupported} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 const $=i=>document.getElementById(i);
-let D=[],F='all',U=null,X=null,LK={n:0,me:false},track=()=>{};
+const LS={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(_){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}},del:k=>{try{localStorage.removeItem(k)}catch(_){}}};
+let D=[],F='all',X=null,U=LS.get('bf_user',null),V={},ST={likes:0,dislikes:0},ADM=false,last=0,track=()=>{};
+const loadV=()=>{V=U?LS.get('bf_v_'+U.sub,{}):{}};loadV();
 $('y').textContent=new Date().getFullYear();
+const toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2200)};
+addEventListener('scroll',()=>$('hd').classList.toggle('sc',scrollY>40),{passive:true});
 
-// المقدمة: تظهر مرة واحدة في الجلسة، وتُغلق بالنقر
+// المقدمة
 const intro=$('intro');
-if(intro){
-  const end=()=>{intro.classList.add('out');setTimeout(()=>intro.remove(),700)};
-  intro.onclick=end;setTimeout(end,2900);
-  try{sessionStorage.setItem('bf_i','1')}catch(_){}
-}
+if(intro){const end=()=>{intro.classList.add('out');setTimeout(()=>intro.remove(),700)};intro.onclick=end;setTimeout(end,2900);try{sessionStorage.setItem('bf_i','1')}catch(_){}}
 
+// ===== تسجيل الدخول بجوجل (Google Identity Services) — الحساب يُحفظ في متصفح المستخدم فقط =====
+const CID=(window.BF||{}).CLIENT_ID||'',okCid=/^\d.*\.apps\.googleusercontent\.com$/.test(CID);
+let gInit=false;
+const whenG=(cb,n=0)=>{if(window.google&&google.accounts)cb();else if(n<100)setTimeout(()=>whenG(cb,n+1),100)};
+const jwt=t=>{const p=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(p),c=>c.charCodeAt(0))))};
+function gBtn(el){
+  if(!okCid)return;
+  whenG(()=>{
+    if(!gInit){gInit=true;google.accounts.id.initialize({client_id:CID,callback:r=>{
+      try{const p=jwt(r.credential);U={name:p.name||'مستخدم',pic:p.picture||'',sub:p.sub};LS.set('bf_user',U);loadV();$('lgm').classList.remove('open');paintAuth();if(X)social()}
+      catch(e){alert('تعذر قراءة بيانات الدخول')}}})}
+    google.accounts.id.renderButton(el,{theme:'filled_black',size:'large',shape:'pill',locale:'ar'});
+  });
+}
+function paintAuth(){
+  const a=$('au');
+  if(U){
+    a.innerHTML=`${U.pic?`<img src="${esc(U.pic)}" alt="" referrerpolicy="no-referrer">`:''}<small>${esc(U.name)}</small><button id="so">خروج</button>`;
+    $('so').onclick=()=>{U=null;LS.del('bf_user');loadV();if(window.google&&google.accounts)google.accounts.id.disableAutoSelect();paintAuth();if(X)social()};
+  }else if(okCid){a.innerHTML='<div id="gb"></div>';gBtn($('gb'))}
+  else{a.innerHTML='<button id="si">دخول بجوجل</button>';$('si').onclick=askLogin}
+}
+function askLogin(){
+  $('lgm').classList.add('open');const b=$('lgb');b.innerHTML='';
+  if(!okCid){b.textContent='لم يُضبط معرّف Google بعد. افتح config.js وضع الـ Client ID.';return}
+  gBtn(b);
+}
+$('lgx').onclick=()=>$('lgm').classList.remove('open');
+paintAuth();
+onAuthStateChanged(auth,u=>{ADM=!!u&&u.email===ADMIN;if(X)paintComments()});
+
+// ===== العرض =====
+const card=x=>`<div class="card" tabindex="0" data-id="${esc(x.id)}"><div class="poster">${x.poster?`<img src="${esc(x.poster)}" alt="${esc(x.title)}" loading="lazy" onerror="this.remove()">`:esc(x.title[0]||'B')}</div><div class="i"><b>${esc(x.title)}</b><small>${x.type==='series'?'مسلسل':'فيلم'}${x.year?' · '+esc(x.year):''}</small></div></div>`;
+const row=(t,L)=>L.length?`<section class="rw"><h3>${esc(t)}</h3><button class="ar p" aria-label="السابق">›</button><div class="rs">${L.map(card).join('')}</div><button class="ar n" aria-label="التالي">‹</button></section>`:'';
 function render(){
-  const q=$('q').value.trim().toLowerCase();
-  const L=D.filter(x=>(F==='all'||x.type===F)&&(!q||(x.title+' '+(x.genre||'')).toLowerCase().includes(q)));
-  $('grid').innerHTML=L.length?L.map(x=>`<div class="card" data-id="${esc(x.id)}"><div class="poster">${x.poster?`<img src="${esc(x.poster)}" alt="${esc(x.title)}" loading="lazy" onerror="this.remove()">`:esc(x.title[0]||'B')}</div><div class="i"><b>${esc(x.title)}</b><small>${x.type==='series'?'مسلسل':'فيلم'}${x.year?' · '+esc(x.year):''}</small></div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">لا توجد نتائج</div>';
+  const q=$('q').value.trim().toLowerCase(),base=D.filter(x=>F==='all'||x.type===F);
+  if(q){
+    $('hero').innerHTML='';$('rows').style.marginTop='90px';
+    const L=base.filter(x=>(x.title+' '+(x.genre||'')).toLowerCase().includes(q));
+    $('rows').innerHTML=`<section class="rw"><h3>نتائج البحث</h3>${L.length?`<div class="grid" style="padding:20px 0">${L.map(card).join('')}</div>`:'<div class="empty">لا توجد نتائج</div>'}</section>`;return;
+  }
+  $('rows').style.marginTop='';
+  const f=base.find(x=>x.poster)||base[0];
+  $('hero').innerHTML=f?`<div class="hero">${f.poster?`<div class="bg" style="background-image:url('${esc(f.poster)}')"></div><img class="pz" src="${esc(f.poster)}" alt="">`:''}<div class="in"><h1>${esc(f.title)}</h1><div class="meta">${esc([f.type==='series'?'مسلسل':'فيلم',f.year,f.genre].filter(Boolean).join(' · '))}</div><p>${esc(f.desc||'')}</p><button class="pri big" data-a="w" data-id="${esc(f.id)}">▶ شاهد الآن</button> <button class="big" data-a="i" data-id="${esc(f.id)}">معلومات</button></div></div>`:'';
+  const g={};base.forEach(x=>(x.genre||'').split(/[،,]/).map(s=>s.trim()).filter(Boolean).forEach(k=>(g[k]=g[k]||[]).push(x)));
+  $('rows').innerHTML=base.length?row('أحدث الإضافات',base)+(F==='all'?row('أفلام',base.filter(x=>x.type==='movie'))+row('مسلسلات',base.filter(x=>x.type==='series')):'')+Object.entries(g).filter(([,l])=>l.length>1).map(([k,l])=>row(k,l)).join(''):'<div class="empty" style="padding-top:120px">لا يوجد محتوى بعد</div>';
 }
-$('grid').onclick=e=>{const c=e.target.closest('.card');if(c)openM(c.dataset.id)};
+const onClick=e=>{
+  const b=e.target.closest('[data-a]');if(b)return openM(b.dataset.id,b.dataset.a==='w');
+  const ar=e.target.closest('.ar');if(ar){const s=ar.parentElement.querySelector('.rs');s.scrollBy({left:(ar.classList.contains('n')?-1:1)*s.clientWidth*.85,behavior:'smooth'});return}
+  const c=e.target.closest('.card');if(c)openM(c.dataset.id);
+};
+$('hero').onclick=$('rows').onclick=onClick;
+$('rows').onkeydown=e=>{if(e.key==='Enter'&&e.target.classList.contains('card'))openM(e.target.dataset.id)};
+$('q').oninput=render;
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(c=>c.classList.remove('on'));b.classList.add('on');F=b.dataset.f;render()});
 
-// 1) صفحة المعلومات
-function openM(id){
+// ===== المعلومات ثم المشاهدة =====
+function openM(id,watch){
   X=D.find(i=>i.id===id);if(!X)return;
+  $('bx').style.setProperty('--bgi',X.poster?`url("${X.poster.replace(/["\\\n]/g,'')}")`:'none');
   $('dp').innerHTML=X.poster?`<img src="${esc(X.poster)}" alt="${esc(X.title)}" onerror="this.remove()">`:esc(X.title[0]||'B');
   $('dt').textContent=X.title;
   $('dm').textContent=[X.type==='series'?'مسلسل':'فيلم',X.year,X.genre].filter(Boolean).join(' · ');
   $('dd').textContent=X.desc||'';
   $('dv').style.display='';$('wv').style.display='none';
-  $('modal').classList.add('open');
+  $('modal').classList.add('open');$('modal').scrollTop=0;
+  try{history.replaceState(null,'','?v='+encodeURIComponent(id))}catch(_){}
   track(X.title,X.type);social();
+  if(watch)$('go').click();
 }
-// 2) المشاهدة
 $('go').onclick=()=>{
   $('dv').style.display='none';$('wv').style.display='';
   const ep=$('ep');ep.innerHTML='';
@@ -96,54 +166,53 @@ $('go').onclick=()=>{
   }else mountPlayer($('pl'),$('pb'),X.url);
 };
 $('bk').onclick=()=>{$('pl').innerHTML='';$('pb').innerHTML='';$('dv').style.display='';$('wv').style.display='none'};
-function closeM(){$('modal').classList.remove('open');$('pl').innerHTML='';$('pb').innerHTML='';X=null}
+function closeM(){$('modal').classList.remove('open');$('pl').innerHTML='';$('pb').innerHTML='';X=null;try{history.replaceState(null,'',location.pathname)}catch(_){}}
 $('cl').onclick=closeM;
 $('modal').onclick=e=>{if(e.target.id==='modal')closeM()};
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
-$('q').oninput=render;
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('nav button').forEach(c=>c.classList.remove('on'));b.classList.add('on');F=b.dataset.f;
-  $('ttl').textContent={all:'أحدث الإضافات',movie:'الأفلام',series:'المسلسلات'}[F];render()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
 
-// الحساب (اختياري)
-const signIn=()=>loginGoogle().catch(e=>{if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')alert('تعذر تسجيل الدخول: '+e.message)});
-onAuthStateChanged(auth,u=>{
-  U=u;
-  $('au').innerHTML=u?`${u.photoURL?`<img src="${esc(u.photoURL)}" alt="">`:''}<small>${esc(u.displayName||'')}</small><button id="so">خروج</button>`:'<button id="si">دخول بجوجل</button>';
-  if(u)$('so').onclick=()=>signOut(auth);else $('si').onclick=signIn;
-  if(X)social();
-});
-
-// الإعجاب والتعليقات
+// ===== إعجاب / عدم إعجاب / مشاركة / تعليقات =====
 async function social(){
   const id=X.id;
-  try{const r=await likeInfo(id,U&&U.uid);if(!X||X.id!==id)return;LK=r}catch(e){LK={n:0,me:false}}
-  paintLike();
-  $('cf').innerHTML=U?`<form id="cfm"><textarea id="ct" rows="2" maxlength="500" placeholder="اكتب تعليقك..."></textarea><button class="pri" style="justify-self:start">نشر التعليق</button></form>`:'<div class="note">سجّل الدخول بجوجل لتعلّق وتضع إعجابك. المشاهدة متاحة للجميع.</div><button id="si2">دخول بجوجل</button>';
+  try{ST=await getStats(id)}catch(_){ST={likes:0,dislikes:0}}
+  if(!X||X.id!==id)return;
+  paintVote();
+  $('cf').innerHTML=U?`<form id="cfm"><textarea id="ct" rows="2" maxlength="300" placeholder="اكتب تعليقك..."></textarea><button class="pri" style="justify-self:start">نشر التعليق</button></form>`:'<div class="note">سجّل الدخول بجوجل لتعلّق وتضع إعجابك.</div><button id="si2">دخول بجوجل</button>';
   if(U)$('cfm').onsubmit=async e=>{
     e.preventDefault();const t=$('ct').value.trim();if(!t)return;
-    try{await addComment(id,U,t);$('ct').value='';paintComments()}catch(err){alert('تعذر نشر التعليق: '+err.message)}
-  };else $('si2').onclick=signIn;
+    if(Date.now()-last<15000)return toast('انتظر قليلًا قبل التعليق مرة أخرى');
+    try{await addComment(id,U,t);last=Date.now();$('ct').value='';paintComments()}catch(err){alert('تعذر نشر التعليق: '+err.message)}
+  };else $('si2').onclick=askLogin;
   paintComments();
 }
-function paintLike(){$('lk').textContent=(LK.me?'♥ ':'♡ ')+LK.n;$('lk').classList.toggle('on',LK.me)}
-$('lk').onclick=async()=>{
-  if(!U)return signIn();
-  const on=!LK.me;LK={n:LK.n+(on?1:-1),me:on};paintLike();
-  try{await setLike(X.id,U.uid,on)}catch(e){LK={n:LK.n+(on?-1:1),me:!on};paintLike();alert('تعذر حفظ الإعجاب: '+e.message)}
+function paintVote(){const v=V[X.id]||0;$('lk').classList.toggle('on',v===1);$('dl').classList.toggle('on',v===-1);$('lkn').textContent=ST.likes;$('dln').textContent=ST.dislikes}
+async function cast(s){
+  if(!U)return askLogin();
+  const id=X.id,old=V[id]||0,nw=old===s?0:s,dl=(nw===1)-(old===1),dd=(nw===-1)-(old===-1);
+  ST={likes:Math.max(0,ST.likes+dl),dislikes:Math.max(0,ST.dislikes+dd)};
+  if(nw)V[id]=nw;else delete V[id];LS.set('bf_v_'+U.sub,V);paintVote();
+  try{await vote(id,dl,dd)}catch(e){console.error(e)}
+}
+$('lk').onclick=()=>cast(1);$('dl').onclick=()=>cast(-1);
+$('cb').onclick=()=>$('cm').scrollIntoView({behavior:'smooth'});
+$('sh').onclick=async()=>{
+  const url=location.origin+location.pathname+'?v='+encodeURIComponent(X.id);
+  try{if(navigator.share){await navigator.share({title:X.title,url});return}await navigator.clipboard.writeText(url);toast('تم نسخ الرابط')}
+  catch(e){if(e.name!=='AbortError')prompt('انسخ الرابط',url)}
 };
 async function paintComments(){
   const id=X.id;let L=[];
   try{L=await getComments(id)}catch(e){console.error(e)}
   if(!X||X.id!==id)return;
-  $('cl2').innerHTML=L.length?L.map(c=>`<div class="cc">${/^https:/.test(c.photo||'')?`<img src="${esc(c.photo)}" alt="">`:'<i></i>'}<div><b>${esc(c.name)}</b><p>${esc(c.text)}</p></div>${U&&(c.uid===U.uid||U.email===ADMIN)?`<button class="del" data-c="${esc(c.id)}">حذف</button>`:''}</div>`).join(''):'<div class="empty">كن أول من يعلّق</div>';
+  $('cbn').textContent=L.length;
+  $('cl2').innerHTML=L.length?L.map(c=>`<div class="cc">${/^https:/.test(c.photo||'')?`<img src="${esc(c.photo)}" alt="" referrerpolicy="no-referrer">`:'<i></i>'}<div><b>${esc(c.name)}</b><p>${esc(c.text)}</p></div>${ADM?`<button class="del" data-c="${esc(c.id)}">حذف</button>`:''}</div>`).join(''):'<div class="empty">كن أول من يعلّق</div>';
 }
 $('cl2').onclick=async e=>{
   const b=e.target.closest('[data-c]');if(!b||!confirm('حذف التعليق؟'))return;
   try{await delComment(X.id,b.dataset.c);paintComments()}catch(err){alert('تعذر الحذف: '+err.message)}
 };
 
-fetchItems().then(d=>{D=d;render()});
+fetchItems().then(d=>{D=d;render();const v=new URLSearchParams(location.search).get('v');if(v)openM(v)});
 isSupported().then(ok=>{if(!ok)return;const a=getAnalytics(app);track=(t,ty)=>logEvent(a,'select_content',{content_type:ty,item_id:t})}).catch(()=>{});
 </script>
 </body>

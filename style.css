@@ -65,3 +65,49 @@ label{font-size:13px;color:var(--mu)}
 .cc img,.cc i{width:34px;height:34px;border-radius:50%;flex:none;background:var(--bd)}
 .cc b{font-size:14px}.cc p{white-space:pre-wrap;overflow-wrap:anywhere}
 .cc button{margin-right:auto;align-self:flex-start;padding:2px 8px;font-size:12px}
+
+/* ===== نسخة فاخرة ===== */
+body{font-family:Tajawal,Cairo,Tahoma,sans-serif;background:#0a0a0f}
+header{position:fixed;inset:0 0 auto 0;background:linear-gradient(#000d,#0000);backdrop-filter:none;transition:background .3s}
+header.sc{background:#0a0a0fef;backdrop-filter:blur(10px)}
+main{padding:0 0 30px}
+.hero{position:relative;min-height:80vh;display:flex;align-items:flex-end;padding:0 5% 110px;overflow:hidden}
+.hero .bg{position:absolute;inset:-30px;background-size:cover;background-position:center 20%;filter:blur(20px) brightness(.5);transform:scale(1.1)}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0a0a0f 3%,#0000 55%),linear-gradient(270deg,#000b,#0000 70%)}
+.hero .in{position:relative;z-index:1;max-width:580px}
+.hero h1{font-size:clamp(34px,6vw,64px);line-height:1.15;margin-bottom:10px;text-shadow:0 4px 24px #000}
+.hero p{color:#ddd;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:12px 0 20px}
+.hero .pz{position:absolute;left:6%;bottom:110px;width:clamp(130px,17vw,240px);border-radius:12px;z-index:1;box-shadow:0 20px 60px #000c}
+@media(max-width:700px){.hero .pz{display:none}.hero{min-height:70vh}}
+.big{font-size:17px;padding:11px 26px;font-weight:700}
+.big:hover,.bar button:hover{transform:scale(1.06)}
+button{transition:transform .15s,background .2s}
+.rows{position:relative;z-index:2;margin-top:-70px}
+.rw{position:relative;padding:0 5%}
+.rw h3{font-size:21px;margin-top:14px}
+.rs{display:flex;gap:12px;overflow-x:auto;padding:28px 6px;scrollbar-width:none;scroll-snap-type:x proximity}
+.rs::-webkit-scrollbar{display:none}
+.rs .card{flex:0 0 clamp(130px,15vw,190px);scroll-snap-align:start}
+.card{position:relative;transition:transform .25s,box-shadow .25s,border-color .25s}
+.card:hover,.card:focus-visible{transform:scale(1.17);z-index:3;box-shadow:0 16px 44px #000c;border-color:#fff4}
+.card .i{position:absolute;inset:auto 0 0;padding:34px 10px 10px;background:linear-gradient(#0000,#000e);opacity:0;transition:opacity .25s}
+.card:hover .i,.card:focus-visible .i{opacity:1}
+@media(hover:none){.card .i{opacity:1}}
+.ar{position:absolute;top:calc(50% + 14px);transform:translateY(-50%);z-index:4;width:42px;height:96px;padding:0;font-size:34px;background:#000a;border:0;opacity:0}
+.rw:hover .ar{opacity:1}.ar:hover{background:#000e}.ar.p{right:0;border-radius:8px 0 0 8px}.ar.n{left:0;border-radius:0 8px 8px 0}
+@media(hover:none){.ar{display:none}}
+.box{max-width:980px;background:#14141c;border-radius:16px;overflow:hidden;padding:20px}
+.box:before{content:"";position:absolute;inset:0 0 auto 0;height:360px;background:var(--bgi,none) center/cover;filter:blur(28px) brightness(.45)}
+.box:after{content:"";position:absolute;inset:0 0 auto 0;height:360px;background:linear-gradient(#0000,#14141c)}
+.box>*{position:relative;z-index:1}.box>.x{position:absolute;z-index:3}
+#modal.open .box{animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:translateY(24px) scale(.97)}}
+.bar{gap:10px}.bar button{display:flex;gap:8px;align-items:center;border-radius:999px;padding:9px 18px}
+.bar svg{width:20px;height:20px;fill:currentColor}.bar .dn svg{transform:rotate(180deg)}
+.bar button.on{background:#fff;color:#000;border-color:#fff}
+#lgm{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+#lgm.open{display:flex}
+#lgm>div{background:#14141c;border:1px solid var(--bd);border-radius:16px;padding:28px;text-align:center;display:grid;gap:14px;max-width:360px;justify-items:center}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 20px;border-radius:999px;z-index:60;display:none}
+.au #gb{min-height:40px}
+.cc img{object-fit:cover}
