@@ -9,7 +9,7 @@ function loadHls(){
 }
 
 // يحوّل أي رابط (أو كود iframe) إلى مشغّل داخل الموقع
-function mountPlayer(el,bar,url){
+function mountPlayer(el,bar,url,sub){
   url=(url||'').trim();
   const f=url.match(/<iframe[^>]+src=["']([^"']+)/i);
   if(f)url=f[1];
@@ -24,7 +24,7 @@ function mountPlayer(el,bar,url){
 
   // ملفات مباشرة
   if(/\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/i.test(url)){
-    el.innerHTML=`<video src="${esc(url)}" controls autoplay playsinline></video>`;return;
+    el.innerHTML=`<video src="${esc(url)}" controls autoplay playsinline>${sub?`<track kind="subtitles" srclang="ar" label="العربية" src="${esc(sub)}" default>`:''}</video>`;return;
   }
   // بث HLS
   if(/\.m3u8(\?|#|$)/i.test(url)){
@@ -36,7 +36,7 @@ function mountPlayer(el,bar,url){
   // يوتيوب
   const pl=(url.match(/[?&]list=([\w-]+)/)||[])[1],st=(url.match(/[?&](?:t|start)=(\d+)/)||[])[1];
   m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/i);
-  if(m)return frame(`https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0&playsinline=1${pl?'&list='+pl:''}${st?'&start='+st:''}`);
+  if(m)return frame(`https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0&playsinline=1&cc_load_policy=1&hl=ar&cc_lang_pref=ar${pl?'&list='+pl:''}${st?'&start='+st:''}`);
   if(pl&&/youtube\.com\/playlist/i.test(url))return frame(`https://www.youtube.com/embed/videoseries?list=${pl}`);
   // فيميو
   if(m=url.match(/vimeo\.com\/(?:video\/)?(\d+)/i))return frame(`https://player.vimeo.com/video/${m[1]}?autoplay=1`);
