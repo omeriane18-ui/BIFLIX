@@ -1,2 +1,1 @@
-// ضع هنا معرّف عميل Google (OAuth Client ID) من Google Cloud Console
-window.BF={CLIENT_ID:"PUT_YOUR_CLIENT_ID.apps.googleusercontent.com"};
+window.BF={CLIENT_ID:"611452269817-ipot9pub3tbaf46favkoetcinjgleoom.apps.googleusercontent.com"};
