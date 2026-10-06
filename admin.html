@@ -44,7 +44,7 @@
 
 <script src="app.js"></script>
 <script type="module">
-import {auth,db,doc,setDoc,deleteDoc,signInWithEmailAndPassword,signOut,onAuthStateChanged,fetchItems} from './firebase.js';
+import {auth,db,doc,setDoc,deleteDoc,signInWithEmailAndPassword,signOut,onAuthStateChanged,fetchItems,ADMIN} from './firebase.js';
 const $=i=>document.getElementById(i);
 let D=[],E=null;
 async function login(){
@@ -55,6 +55,7 @@ async function login(){
 $('go').onclick=login;$('pw').onkeydown=e=>{if(e.key==='Enter')login()};
 $('lo').onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async u=>{
+  if(u&&u.email!==ADMIN){await signOut(auth);$('er').textContent='هذا الحساب ليس حساب صاحب الموقع';return}
   if(u){$('lg').style.display='none';$('ap').style.display='block';await refresh()}
   else{$('lg').style.display='';$('ap').style.display='none'}
 });

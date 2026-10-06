@@ -15,6 +15,8 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="intro"><span>BFLIX</span></div>
+<script>try{if(sessionStorage.getItem('bf_i'))document.getElementById('intro').remove()}catch(_){}</script>
 <header>
   <a class="logo" href="./">BFLIX</a>
   <nav>
@@ -23,6 +25,7 @@
     <button data-f="series">مسلسلات</button>
   </nav>
   <input id="q" type="search" placeholder="ابحث عن فيلم أو مسلسل...">
+  <div class="au" id="au"></div>
 </header>
 <main>
   <h2 id="ttl">أحدث الإضافات</h2>
@@ -31,50 +34,117 @@
 <footer>BFLIX © <span id="y"></span> — موقع مريان بلال · <a href="admin.html" style="opacity:.5">لوحة التحكم</a></footer>
 
 <div id="modal"><div class="box">
-  <button class="x" onclick="closeM()">✕ إغلاق</button>
-  <div class="player" id="pl"></div><div class="meta" id="pb"></div>
-  <h2 id="mt"></h2><div class="meta" id="mm"></div><p id="md"></p>
-  <div class="eps" id="ep"></div>
+  <button class="x" id="cl">✕ إغلاق</button>
+  <div id="dv" class="dv">
+    <div class="poster" id="dp"></div>
+    <div>
+      <h2 id="dt"></h2><div class="meta" id="dm"></div><p id="dd"></p>
+      <button class="pri go" id="go">▶ شاهد الآن</button>
+    </div>
+  </div>
+  <div id="wv" style="display:none">
+    <div class="player" id="pl"></div><div class="meta" id="pb"></div>
+    <div class="eps" id="ep"></div>
+    <button id="bk" style="margin-top:10px">رجوع للمعلومات</button>
+  </div>
+  <div class="bar"><button id="lk"></button></div>
+  <div class="cm"><h2>التعليقات</h2><div id="cf"></div><div id="cl2"></div></div>
 </div></div>
 
 <script src="app.js"></script>
-<script>
-let D=[],F='all';
-document.getElementById('y').textContent=new Date().getFullYear();
+<script type="module">
+import {fetchItems,app,auth,ADMIN,onAuthStateChanged,signOut,loginGoogle,likeInfo,setLike,getComments,addComment,delComment} from './firebase.js';
+import {getAnalytics,logEvent,isSupported} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+const $=i=>document.getElementById(i);
+let D=[],F='all',U=null,X=null,LK={n:0,me:false},track=()=>{};
+$('y').textContent=new Date().getFullYear();
+
+// المقدمة: تظهر مرة واحدة في الجلسة، وتُغلق بالنقر
+const intro=$('intro');
+if(intro){
+  const end=()=>{intro.classList.add('out');setTimeout(()=>intro.remove(),700)};
+  intro.onclick=end;setTimeout(end,2900);
+  try{sessionStorage.setItem('bf_i','1')}catch(_){}
+}
+
 function render(){
-  const q=document.getElementById('q').value.trim().toLowerCase();
+  const q=$('q').value.trim().toLowerCase();
   const L=D.filter(x=>(F==='all'||x.type===F)&&(!q||(x.title+' '+(x.genre||'')).toLowerCase().includes(q)));
-  document.getElementById('grid').innerHTML=L.length?L.map(x=>`<div class="card" onclick="openM('${esc(x.id)}')"><div class="poster">${x.poster?`<img src="${esc(x.poster)}" alt="${esc(x.title)}" loading="lazy" onerror="this.remove()">`:esc(x.title[0]||'B')}</div><div class="i"><b>${esc(x.title)}</b><small>${x.type==='series'?'مسلسل':'فيلم'}${x.year?' · '+esc(x.year):''}</small></div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">لا توجد نتائج</div>';
+  $('grid').innerHTML=L.length?L.map(x=>`<div class="card" data-id="${esc(x.id)}"><div class="poster">${x.poster?`<img src="${esc(x.poster)}" alt="${esc(x.title)}" loading="lazy" onerror="this.remove()">`:esc(x.title[0]||'B')}</div><div class="i"><b>${esc(x.title)}</b><small>${x.type==='series'?'مسلسل':'فيلم'}${x.year?' · '+esc(x.year):''}</small></div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">لا توجد نتائج</div>';
 }
-function play(u){mountPlayer(document.getElementById('pl'),document.getElementById('pb'),u)}
+$('grid').onclick=e=>{const c=e.target.closest('.card');if(c)openM(c.dataset.id)};
+
+// 1) صفحة المعلومات
 function openM(id){
-  const x=D.find(i=>i.id===id);if(!x)return;
-  if(window.track)track(x.title,x.type);
-  document.getElementById('mt').textContent=x.title;
-  document.getElementById('mm').textContent=[x.type==='series'?'مسلسل':'فيلم',x.year,x.genre].filter(Boolean).join(' · ');
-  document.getElementById('md').textContent=x.desc||'';
-  const ep=document.getElementById('ep');ep.innerHTML='';
-  if(x.type==='series'&&x.eps&&x.eps.length){
-    x.eps.forEach((e,i)=>{const b=document.createElement('button');b.textContent=e.t||('الحلقة '+(i+1));
-      b.onclick=()=>{[...ep.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');play(e.u)};ep.appendChild(b)});
-    ep.firstChild.click();
-  }else play(x.url);
-  document.getElementById('modal').classList.add('open');
+  X=D.find(i=>i.id===id);if(!X)return;
+  $('dp').innerHTML=X.poster?`<img src="${esc(X.poster)}" alt="${esc(X.title)}" onerror="this.remove()">`:esc(X.title[0]||'B');
+  $('dt').textContent=X.title;
+  $('dm').textContent=[X.type==='series'?'مسلسل':'فيلم',X.year,X.genre].filter(Boolean).join(' · ');
+  $('dd').textContent=X.desc||'';
+  $('dv').style.display='';$('wv').style.display='none';
+  $('modal').classList.add('open');
+  track(X.title,X.type);social();
 }
-function closeM(){document.getElementById('modal').classList.remove('open');document.getElementById('pl').innerHTML='';document.getElementById('pb').innerHTML=''}
-document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeM()};
+// 2) المشاهدة
+$('go').onclick=()=>{
+  $('dv').style.display='none';$('wv').style.display='';
+  const ep=$('ep');ep.innerHTML='';
+  if(X.type==='series'&&X.eps&&X.eps.length){
+    X.eps.forEach((e,i)=>{const b=document.createElement('button');b.textContent=e.t||('الحلقة '+(i+1));
+      b.onclick=()=>{[...ep.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');mountPlayer($('pl'),$('pb'),e.u)};ep.appendChild(b)});
+    ep.firstChild.click();
+  }else mountPlayer($('pl'),$('pb'),X.url);
+};
+$('bk').onclick=()=>{$('pl').innerHTML='';$('pb').innerHTML='';$('dv').style.display='';$('wv').style.display='none'};
+function closeM(){$('modal').classList.remove('open');$('pl').innerHTML='';$('pb').innerHTML='';X=null}
+$('cl').onclick=closeM;
+$('modal').onclick=e=>{if(e.target.id==='modal')closeM()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
-document.getElementById('q').oninput=render;
+$('q').oninput=render;
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(c=>c.classList.remove('on'));b.classList.add('on');F=b.dataset.f;
-  document.getElementById('ttl').textContent={all:'أحدث الإضافات',movie:'الأفلام',series:'المسلسلات'}[F];render()});
-window.setD=d=>{D=d;render()};
-</script>
-<script type="module">
-import {fetchItems,app} from './firebase.js';
-import {getAnalytics,logEvent,isSupported} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-fetchItems().then(window.setD);
-isSupported().then(ok=>{if(!ok)return;const a=getAnalytics(app);window.track=(t,ty)=>logEvent(a,'select_content',{content_type:ty,item_id:t})}).catch(()=>{});
+  $('ttl').textContent={all:'أحدث الإضافات',movie:'الأفلام',series:'المسلسلات'}[F];render()});
+
+// الحساب (اختياري)
+const signIn=()=>loginGoogle().catch(e=>{if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')alert('تعذر تسجيل الدخول: '+e.message)});
+onAuthStateChanged(auth,u=>{
+  U=u;
+  $('au').innerHTML=u?`${u.photoURL?`<img src="${esc(u.photoURL)}" alt="">`:''}<small>${esc(u.displayName||'')}</small><button id="so">خروج</button>`:'<button id="si">دخول بجوجل</button>';
+  if(u)$('so').onclick=()=>signOut(auth);else $('si').onclick=signIn;
+  if(X)social();
+});
+
+// الإعجاب والتعليقات
+async function social(){
+  const id=X.id;
+  try{const r=await likeInfo(id,U&&U.uid);if(!X||X.id!==id)return;LK=r}catch(e){LK={n:0,me:false}}
+  paintLike();
+  $('cf').innerHTML=U?`<form id="cfm"><textarea id="ct" rows="2" maxlength="500" placeholder="اكتب تعليقك..."></textarea><button class="pri" style="justify-self:start">نشر التعليق</button></form>`:'<div class="note">سجّل الدخول بجوجل لتعلّق وتضع إعجابك. المشاهدة متاحة للجميع.</div><button id="si2">دخول بجوجل</button>';
+  if(U)$('cfm').onsubmit=async e=>{
+    e.preventDefault();const t=$('ct').value.trim();if(!t)return;
+    try{await addComment(id,U,t);$('ct').value='';paintComments()}catch(err){alert('تعذر نشر التعليق: '+err.message)}
+  };else $('si2').onclick=signIn;
+  paintComments();
+}
+function paintLike(){$('lk').textContent=(LK.me?'♥ ':'♡ ')+LK.n;$('lk').classList.toggle('on',LK.me)}
+$('lk').onclick=async()=>{
+  if(!U)return signIn();
+  const on=!LK.me;LK={n:LK.n+(on?1:-1),me:on};paintLike();
+  try{await setLike(X.id,U.uid,on)}catch(e){LK={n:LK.n+(on?-1:1),me:!on};paintLike();alert('تعذر حفظ الإعجاب: '+e.message)}
+};
+async function paintComments(){
+  const id=X.id;let L=[];
+  try{L=await getComments(id)}catch(e){console.error(e)}
+  if(!X||X.id!==id)return;
+  $('cl2').innerHTML=L.length?L.map(c=>`<div class="cc">${/^https:/.test(c.photo||'')?`<img src="${esc(c.photo)}" alt="">`:'<i></i>'}<div><b>${esc(c.name)}</b><p>${esc(c.text)}</p></div>${U&&(c.uid===U.uid||U.email===ADMIN)?`<button class="del" data-c="${esc(c.id)}">حذف</button>`:''}</div>`).join(''):'<div class="empty">كن أول من يعلّق</div>';
+}
+$('cl2').onclick=async e=>{
+  const b=e.target.closest('[data-c]');if(!b||!confirm('حذف التعليق؟'))return;
+  try{await delComment(X.id,b.dataset.c);paintComments()}catch(err){alert('تعذر الحذف: '+err.message)}
+};
+
+fetchItems().then(d=>{D=d;render()});
+isSupported().then(ok=>{if(!ok)return;const a=getAnalytics(app);track=(t,ty)=>logEvent(a,'select_content',{content_type:ty,item_id:t})}).catch(()=>{});
 </script>
 </body>
 </html>
