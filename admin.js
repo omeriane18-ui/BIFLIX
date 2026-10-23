@@ -126,3 +126,25 @@ function drawChart(){
   g+=`<polyline points="${pts}" fill="none" stroke="#5aa9ff" stroke-width="2.5" stroke-linejoin="round"/>`+S.map((x,k)=>`<circle cx="${pl+step*k+step/2}" cy="${y(x.w)}" r="3.5" fill="#5aa9ff"/>`).join('');
   $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="رسم الزوار والتشغيلات">${g}</svg>`;
 }
+
+// ===================== نسخ احتياطي / استيراد =====================
+$('bkp').onclick=()=>{
+  const l=document.createElement('a');
+  l.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));
+  l.download='bflix-backup-'+new Date().toISOString().slice(0,10)+'.json';l.click();
+};
+$('imp').onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{
+    const arr=JSON.parse(await f.text());
+    if(!Array.isArray(arr))throw new Error('الملف ليس نسخة احتياطية صحيحة');
+    if(!confirm('سيتم استيراد '+arr.length+' عنصر (العناصر المتطابقة تُستبدل). متابعة؟'))return;
+    let n=0;
+    for(const x of arr){
+      if(!x||!x.id||!x.title)continue;
+      const o={title:String(x.title),type:x.type==='series'?'series':'movie',year:x.year||'',genre:x.genre||'',poster:x.poster||'',desc:x.desc||'',url:x.url||'',sub:x.sub||'',eps:Array.isArray(x.eps)?x.eps:[],featured:!!x.featured,ts:x.ts||Date.now()};
+      await setDoc(doc(db,'items',String(x.id).replace(/[^A-Za-z0-9]/g,'')||('i'+Date.now()+n)),o);n++;
+    }
+    alert('تم استيراد '+n+' عنصر ✓');await refresh();
+  }catch(err){alert('تعذّر الاستيراد: '+err.message)}
+};
