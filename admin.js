@@ -77,7 +77,7 @@ async function loadStats(){
     const cut=Timestamp.fromMillis(Date.now()-120000);
     const [pres,daily,dw]=await Promise.all([
       getDocs(query(collection(db,'presence'),where('ts','>',cut),limit(500))),
-      getDocs(query(collection(db,'daily'),orderBy(documentId(),'desc'),limit(30))),
+      getDocs(query(collection(db,'daily'),where(documentId(),'>=',String(dnum(-29))))),
       getDocs(query(collection(db,'dw'),where('d','>=',dnum(-29))))
     ]);
     const now=pres.docs.map(d=>d.data());
