@@ -3,12 +3,12 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 import {getFirestore,collection,getDocs,query,orderBy} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 export const app=initializeApp({
-  apiKey:"AIzaSyAT3fFdOtfJ-Xx5RxbHqM71XnxOARiUPUM",
-  authDomain:"biflix-f5d51.firebaseapp.com",
-  projectId:"biflix-f5d51",
-  storageBucket:"biflix-f5d51.firebasestorage.app",
-  messagingSenderId:"611452269817",
-  appId:"1:611452269817:web:f1cb0442db6921af5a5e28"
+  apiKey:"AIzaSyBrjk3fup3gN9oKz1G25atW0o7Czb5StqY",
+  authDomain:"bflix2-6116a.firebaseapp.com",
+  projectId:"bflix2-6116a",
+  storageBucket:"bflix2-6116a.firebasestorage.app",
+  messagingSenderId:"1049191430009",
+  appId:"1:1049191430009:web:10d638bd8d3ceb23bca1a8"
 });
 export const db=getFirestore(app);
 
