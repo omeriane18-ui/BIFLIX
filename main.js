@@ -1,7 +1,7 @@
 import {fetchItems} from './firebase.js';
 const $=i=>document.getElementById(i);
 const LS={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(_){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}};
-let D=[],F='all',X=null,CUR=0;
+let D=[],F='all',X=null,CUR=0,T=null;
 let MY=LS.get('bf_my',[]),CW=LS.get('bf_cw',{});   // قائمتي + تابع المشاهدة (محفوظان في متصفحك فقط)
 $('y').textContent=new Date().getFullYear();
 const toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2200)};
@@ -94,6 +94,7 @@ function play(i){
     mountPlayer($('pl'),$('pb'),e.u,e.s,()=>i<X.eps.length-1&&play(i+1));
     if(i<X.eps.length-1){const n=document.createElement('button');n.className='pri';n.textContent='الحلقة التالية ◀';n.onclick=()=>play(i+1);$('pb').appendChild(n)}
   }else mountPlayer($('pl'),$('pb'),X.url,X.sub);
+  if(T){T.setPage('watch',X.id);T.watch(X.id)}
   CW[X.id]={ep:i,ts:Date.now()};
   const keys=Object.keys(CW).sort((a,b)=>CW[b].ts-CW[a].ts).slice(0,40);
   CW=Object.fromEntries(keys.map(k=>[k,CW[k]]));LS.set('bf_cw',CW);
@@ -107,8 +108,9 @@ $('go').onclick=()=>{
   }else play(0);
   $('modal').scrollTop=0;
 };
-$('bk').onclick=()=>{$('pl').innerHTML='';$('pb').innerHTML='';$('dv').style.display='';$('sim').style.display='';$('wv').style.display='none'};
+$('bk').onclick=()=>{if(T)T.setPage('home');$('pl').innerHTML='';$('pb').innerHTML='';$('dv').style.display='';$('sim').style.display='';$('wv').style.display='none'};
 function closeM(){
+  if(T)T.setPage('home');
   $('modal').classList.remove('open');$('pl').innerHTML='';$('pb').innerHTML='';$('sim').style.display='';X=null;document.body.style.overflow='';
   try{history.replaceState(null,'',location.pathname)}catch(_){}
   render();
@@ -135,4 +137,6 @@ fetchItems().then(d=>{
   render();
   const v=new URLSearchParams(location.search).get('v');if(v)openM(v);
 });
+// إحصائيات مجهولة لصاحب الموقع (تُحمَّل بعد ظهور الصفحة، وفشلها لا يؤثر على شيء)
+setTimeout(()=>import('./track.js').then(m=>{T=m;m.setPage('home')}).catch(()=>{}),1500);
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}));

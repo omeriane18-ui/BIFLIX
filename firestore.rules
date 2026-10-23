@@ -18,7 +18,68 @@ service cloud.firestore {
         && request.resource.data.eps is list && request.resource.data.eps.size() <= 500;
     }
 
-    // لا تعليقات ولا إعجابات ولا حسابات زوّار: كل ما عدا ذلك مرفوض تمامًا
+
+    // ===== إحصائيات مجهولة (تكتبها الصفحة العامة عبر تسجيل دخول مجهول، وتقرؤها أنت فقط) =====
+    function authed() { return request.auth != null; }
+    function today() {
+      return string(request.time.year() * 10000 + request.time.month() * 100 + request.time.day());
+    }
+    function old(f) { return resource == null ? 0 : resource.data.get(f, 0); }
+    function itemOk(i) { return i is string && i.matches('^[A-Za-z0-9]{1,40}$'); }
+
+    // نشطون الآن: وثيقة لكل زائر، تُحدَّث بحد أدنى 10 ثوانٍ بين تحديثين
+    match /presence/{u} {
+      allow read: if isAdmin();
+      allow delete: if authed() && request.auth.uid == u;
+      allow create, update: if authed() && request.auth.uid == u
+        && request.resource.data.keys().hasOnly(['ts','p','i'])
+        && request.resource.data.ts == request.time
+        && request.resource.data.p in ['home','watch']
+        && request.resource.data.i is string && request.resource.data.i.size() <= 40
+        && (resource == null || request.time > resource.data.ts + duration.value(10, 's'));
+    }
+
+    // علامة "زائر اليوم" — إنشاء فقط، مرة واحدة لكل مستخدم في اليوم
+    match /seen/{id} {
+      allow create: if authed()
+        && id == today() + '_' + request.auth.uid
+        && request.resource.data.keys().hasOnly(['ts'])
+        && request.resource.data.ts == request.time;
+    }
+    // علامة "بدأ مشاهدة عنوان اليوم" — إنشاء فقط
+    match /wv/{id} {
+      allow create: if authed()
+        && itemOk(request.resource.data.i)
+        && id == today() + '_' + request.auth.uid + '_' + request.resource.data.i
+        && request.resource.data.keys().hasOnly(['ts','i'])
+        && request.resource.data.ts == request.time;
+    }
+
+    // عدّاد زوّار اليوم: يزيد 1 فقط، ولا يُقبل إلا مع إنشاء علامة seen في نفس الدفعة
+    match /daily/{day} {
+      allow read: if isAdmin();
+      allow create, update: if authed()
+        && day == today()
+        && request.resource.data.keys().hasOnly(['v'])
+        && request.resource.data.v == old('v') + 1
+        && !exists(/databases/$(database)/documents/seen/$(day + '_' + request.auth.uid))
+        && existsAfter(/databases/$(database)/documents/seen/$(day + '_' + request.auth.uid));
+    }
+    // عدّاد تشغيل العناوين لكل يوم: +1 فقط، مع إنشاء علامة wv في نفس الدفعة
+    match /dw/{id} {
+      allow read: if isAdmin();
+      allow create, update: if authed()
+        && request.resource.data.keys().hasOnly(['d','i','w'])
+        && itemOk(request.resource.data.i)
+        && request.resource.data.d is int
+        && string(request.resource.data.d) == today()
+        && id == string(request.resource.data.d) + '_' + request.resource.data.i
+        && request.resource.data.w == old('w') + 1
+        && !exists(/databases/$(database)/documents/wv/$(today() + '_' + request.auth.uid + '_' + request.resource.data.i))
+        && existsAfter(/databases/$(database)/documents/wv/$(today() + '_' + request.auth.uid + '_' + request.resource.data.i));
+    }
+
+    // كل ما عدا ذلك مرفوض تمامًا
     match /{document=**} {
       allow read, write: if false;
     }

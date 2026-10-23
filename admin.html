@@ -24,10 +24,33 @@
 <div id="ap" style="display:none">
 <header>
   <span class="logo">BFLIX <small style="font-size:14px;color:var(--mu)">لوحة التحكم</small></span>
-  <nav><a class="btn" href="./" target="_blank">عرض الموقع</a><button id="lo">خروج</button></nav>
+  <nav><button class="on" id="tb-st">📊 الإحصائيات</button><button id="tb-ct">🎬 إدارة المحتوى</button><a class="btn" href="./" target="_blank">عرض الموقع</a><button id="lo">خروج</button></nav>
 </header>
 <main>
-  <div class="panel">
+  <section id="sec-st">
+    <div class="kpis">
+      <div class="kpi live"><b id="k-now">–</b><span><i class="dot"></i> نشطون الآن</span></div>
+      <div class="kpi"><b id="k-watch">–</b><span>يشاهدون الآن</span></div>
+      <div class="kpi"><b id="k-today">–</b><span>زوّار اليوم</span></div>
+      <div class="kpi"><b id="k-7">–</b><span>زوّار آخر 7 أيام</span></div>
+      <div class="kpi"><b id="k-30">–</b><span>زوّار آخر 30 يومًا</span></div>
+      <div class="kpi"><b id="k-w30">–</b><span>تشغيلات آخر 30 يومًا</span></div>
+    </div>
+    <div class="cardx">
+      <div class="ch"><h3>الزوّار والتشغيلات يوميًا</h3>
+        <span class="lg"><i style="background:var(--ac)"></i> زوّار <i style="background:#5aa9ff"></i> تشغيلات</span>
+        <span class="rng"><button id="r7">7 أيام</button><button id="r30" class="on">30 يومًا</button></span></div>
+      <div id="chart"></div>
+    </div>
+    <div class="two">
+      <div class="cardx"><h3>الأكثر مشاهدة (30 يومًا)</h3><div id="top"></div></div>
+      <div class="cardx"><h3>ماذا يفعل النشطون الآن</h3><div id="nowlist"></div></div>
+    </div>
+    <div class="cardx"><h3>المحتوى</h3><div id="cstat" class="cs"></div></div>
+    <div class="note" id="stn">يتحدّث تلقائيًا كل 30 ثانية. الأرقام مجهولة الهوية (بدون أسماء أو IP). الزائر الذي يفعّل «عدم التتبّع» في متصفحه لا يُحسب.</div>
+    <button id="rf">↻ تحديث الآن</button>
+  </section>
+  <div class="panel" id="sec-ct" style="display:none">
     <div class="fm">
       <h2 id="fh">إضافة جديد</h2>
       <div><label>العنوان</label><input id="t"></div>

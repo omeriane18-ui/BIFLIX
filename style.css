@@ -141,3 +141,32 @@ body{overflow-x:hidden}
 .sk-h{height:22px;width:160px;border-radius:6px;background:#1b1b26;margin-top:18px}
 @keyframes sk{to{background-position:-300% 0}}
 .box>.x{position:fixed;z-index:20}
+
+/* ===== لوحة الإحصائيات ===== */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.kpi{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;display:grid;gap:4px}
+.kpi b{font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1}
+.kpi span{color:var(--mu);font-size:14px}
+.kpi.live b{color:#3ddc84}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 0 #3ddc8488;animation:pl 1.8s infinite}
+@keyframes pl{70%{box-shadow:0 0 0 9px #0000}100%{box-shadow:0 0 0 0 #0000}}
+.cardx{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:12px}
+.cardx h3{font-size:17px;margin-bottom:10px}
+.ch{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:6px}.ch h3{margin:0;flex:1}
+.lg{font-size:13px;color:var(--mu)}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin:0 8px 0 4px}
+.rng button{padding:4px 12px;font-size:13px}.rng button.on{background:var(--ac);border-color:var(--ac)}
+#chart svg{width:100%;height:auto;direction:ltr}
+.gl{stroke:var(--bd);stroke-width:1}.ax{fill:var(--mu);font-size:11px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:800px){.two{grid-template-columns:1fr}}
+.row b{margin-inline-start:auto}
+.bl{display:grid;grid-template-columns:minmax(0,1fr) 90px auto;gap:10px;align-items:center;padding:6px 0;font-size:14px}
+.bl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bb{background:#0f0f16;border-radius:99px;height:8px;overflow:hidden}.bb i{display:block;height:100%;background:var(--ac)}
+.cs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.cs div{display:grid}.cs b{font-size:24px}.cs span{color:var(--mu);font-size:13px}
+.note.warn{border-color:#ff6b6b;color:#ffb3b3}
+#sec-st{max-width:1200px;margin:0 auto;padding-top:16px}
+#ap header{position:sticky;inset:auto;top:0;background:#0a0a0fef;backdrop-filter:blur(10px)}
+#ap main{padding:0 5% 40px}
+#ap #sec-ct{padding-top:16px}
