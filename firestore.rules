@@ -1,30 +1,26 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
     function isAdmin() {
       return request.auth != null && request.auth.token.email == 'omeriane0@gmail.com';
     }
+
+    // المحتوى: قراءة للجميع، وكتابة/حذف لصاحب الموقع فقط (مع التحقق من شكل البيانات)
     match /items/{id} {
       allow read: if true;
-      allow write: if isAdmin();
-      match /comments/{cid} {
-        allow read: if true;
-        allow create: if request.resource.data.keys().hasOnly(['name','photo','text','ts'])
-          && request.resource.data.text is string
-          && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 300
-          && request.resource.data.name is string && request.resource.data.name.size() <= 60
-          && request.resource.data.photo is string && request.resource.data.photo.size() <= 400;
-        allow delete: if isAdmin();
-      }
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['title','type','year','genre','poster','desc','url','sub','eps','featured','ts'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 150
+        && request.resource.data.type in ['movie','series']
+        && request.resource.data.eps is list && request.resource.data.eps.size() <= 500;
     }
-    match /stats/{id} {
-      allow read: if true;
-      allow create: if request.resource.data.keys().hasOnly(['likes','dislikes'])
-        && request.resource.data.likes in [0,1] && request.resource.data.dislikes in [0,1];
-      allow update: if request.resource.data.keys().hasOnly(['likes','dislikes'])
-        && request.resource.data.likes >= 0 && request.resource.data.dislikes >= 0
-        && math.abs(request.resource.data.likes - resource.data.likes) <= 1
-        && math.abs(request.resource.data.dislikes - resource.data.dislikes) <= 1;
+
+    // لا تعليقات ولا إعجابات ولا حسابات زوّار: كل ما عدا ذلك مرفوض تمامًا
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

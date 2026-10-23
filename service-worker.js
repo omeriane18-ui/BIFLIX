@@ -1,8 +1,8 @@
 // الشبكة أولًا: التحديثات تصل فورًا، والتخزين المحلي للاحتياط عند انقطاع الإنترنت فقط
-const C='bflix-v1';
+const C='bflix-v2';
 self.addEventListener('install',e=>{
   self.skipWaiting();
-  e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','style.css','app.js','firebase.js','config.js','icon-192.png'])).catch(()=>{}));
+  e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','style.css','app.js','main.js','firebase.js','guard.js','config.js','icon-192.png'])).catch(()=>{}));
 });
 self.addEventListener('activate',e=>{
   e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()));

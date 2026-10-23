@@ -1,2 +1,4 @@
-// معرّف عميل Google (OAuth Client ID) — عام وليس سرًّا
-window.BF={CLIENT_ID:"611452269817-ipot9pub3tbaf46favkoetcinjgleoom.apps.googleusercontent.com"};
+// إعدادات اختيارية.
+// APPCHECK_KEY: مفتاح reCAPTCHA v3 من Firebase App Check — يمنع الطلبات الآلية/الوهمية على قاعدة البيانات.
+// اتركه فارغًا لتعطيله (راجع README لخطوات التفعيل).
+window.BF={APPCHECK_KEY:""};
